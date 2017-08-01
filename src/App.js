@@ -11,13 +11,17 @@ class App extends Component {
     this.removeContact = this.removeContact.bind(this);
   }
   componentWillMount() {
+    const { contacts, } = this.props;
+
     this.setState({
-      contacts: this.props.contacts,
+      contacts,
     });
   }
 
   componentWillReceiveProps(nextProps) {
-    if (!isEqual(this.props.contacts, nextProps.contacts)) {
+    const { contacts, } = this.props;
+
+    if (!isEqual(contacts, nextProps.contacts)) {
       this.setState({
         contacts: nextProps.contacts,
       });
@@ -31,10 +35,12 @@ class App extends Component {
   }
 
   render() {
+    const { contacts, } = this.state;
+
     return (
       <div>
         <ContactList
-          contacts={this.state.contacts}
+          contacts={contacts}
           onDeleteContact={this.removeContact}
         />
       </div>
@@ -67,6 +73,6 @@ App.defaultProps = {
       "avatarURL": "http://localhost:5001/tyler.jpg",
     }
   ],
-}
+};
 
 export default App;
