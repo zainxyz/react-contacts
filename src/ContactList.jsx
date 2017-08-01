@@ -14,6 +14,8 @@ class ContactList extends Component {
     this.state = {
       query: '',
     };
+
+    this.clearQuery = this.clearQuery.bind(this);
   }
 
   componentWillMount() {
@@ -38,7 +40,11 @@ class ContactList extends Component {
     this.setState({ query, });
   }
 
-  renderContactListItems() {
+  clearQuery() {
+    this.setState({ query: '', });
+  }
+
+  renderContactList() {
     const { contacts, query, } = this.state;
     const { onDeleteContact, } = this.props;
 
@@ -56,13 +62,39 @@ class ContactList extends Component {
     // Always sort the contactsCopy alphabetically by their name
     contactsCopy = [...contactsCopy.sort(sortBy('name'))];
 
-    return contactsCopy.map(contact => (
-      <ContactListItem
-        key={shortid.generate()}
-        contact={contact}
-        onDeleteContact={onDeleteContact}
-      />
-    ));
+    return (
+      <div>
+        <div className="showing-contacts">
+          {this.renderShowingContactsText(contactsCopy)}
+        </div>
+        <ol className="contact-list">
+          {contactsCopy.map(contact => (
+            <ContactListItem
+              key={shortid.generate()}
+              contact={contact}
+              onDeleteContact={onDeleteContact}
+            />
+          ))}
+        </ol>
+      </div>
+    );
+  }
+
+  renderShowingContactsText(filteredContacts) {
+    const { contacts, } = this.state;
+    const filteredContactsLength = filteredContacts.length;
+    const originalContactsLength = contacts.length;
+
+    if (!isEqual(filteredContactsLength, originalContactsLength)) {
+      return (
+        <div>
+          <span>Now showing {filteredContactsLength} of {originalContactsLength} total</span>
+          <button onClick={this.clearQuery}>Show all</button>
+        </div>
+      );
+    }
+
+    return null;
   }
 
   renderSearchInput() {
@@ -85,9 +117,7 @@ class ContactList extends Component {
         <div className="list-contacts-top">
           {this.renderSearchInput()}
         </div>
-        <ol className="contact-list">
-          {this.renderContactListItems()}
-        </ol>
+        {this.renderContactList()}
       </div>
     );
   }
