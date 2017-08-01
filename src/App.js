@@ -2,20 +2,23 @@ import isEqual from 'lodash/isEqual';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
+import * as ContactsAPI from './utils/ContactsAPI';
 import ContactList from './ContactList';
 
 class App extends Component {
   constructor(props) {
     super(props);
 
+    this.state = {
+      contacts: [],
+    };
+
     this.removeContact = this.removeContact.bind(this);
   }
-  componentWillMount() {
-    const { contacts, } = this.props;
 
-    this.setState({
-      contacts,
-    });
+  componentDidMount() {
+    ContactsAPI.getAll()
+      .then(contacts => this.setState({ contacts, }));
   }
 
   componentWillReceiveProps(nextProps) {
@@ -32,6 +35,8 @@ class App extends Component {
     this.setState((state) => ({
       contacts: state.contacts.filter(c => c.id !== contact.id),
     }));
+
+    ContactsAPI.remove(contact);
   }
 
   render() {
@@ -53,26 +58,7 @@ App.propTypes = {
 };
 
 App.defaultProps = {
-  contacts: [
-    {
-      "id": "ryan",
-      "name": "Ryan Florence",
-      "email": "ryan@reacttraining.com",
-      "avatarURL": "http://localhost:5001/ryan.jpg",
-    },
-    {
-      "id": "michael",
-      "name": "Michael Jackson",
-      "email": "michael@reacttraining.com",
-      "avatarURL": "http://localhost:5001/michael.jpg",
-    },
-    {
-      "id": "tyler",
-      "name": "Tyler McGinnis",
-      "email": "tyler@reacttraining.com",
-      "avatarURL": "http://localhost:5001/tyler.jpg",
-    }
-  ],
+  contacts: [],
 };
 
 export default App;
