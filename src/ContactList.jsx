@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import shortid from 'shortid';
 import sortBy from 'sort-by';
+import { Link } from 'react-router-dom';
 
 import ContactListItem from './ContactListItem';
 
@@ -116,6 +117,12 @@ class ContactList extends Component {
       <div className="list-contacts">
         <div className="list-contacts-top">
           {this.renderSearchInput()}
+          <Link
+            to="/create"
+            className="add-contact"
+          >
+            Add Contact
+          </Link>
         </div>
         {this.renderContactList()}
       </div>

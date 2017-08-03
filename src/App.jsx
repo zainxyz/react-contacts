@@ -1,9 +1,11 @@
 import isEqual from 'lodash/isEqual';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { Route } from 'react-router-dom';
 
 import * as ContactsAPI from './utils/ContactsAPI';
 import ContactList from './ContactList';
+import CreateContact from './CreateContact';
 
 class App extends Component {
   constructor(props) {
@@ -14,6 +16,8 @@ class App extends Component {
     };
 
     this.removeContact = this.removeContact.bind(this);
+    this.renderContactList = this.renderContactList.bind(this);
+    this.renderCreateContact = this.renderCreateContact.bind(this);
   }
 
   componentDidMount() {
@@ -31,6 +35,16 @@ class App extends Component {
     }
   }
 
+  createContact(contact, history) {
+    ContactsAPI.create(contact)
+      .then(contact => {
+        this.setState(state => ({
+          contacts: state.contacts.concat([contact]),
+        }));
+        history.push('/');
+      });
+  }
+
   removeContact(contact) {
     this.setState((state) => ({
       contacts: state.contacts.filter(c => c.id !== contact.id),
@@ -39,15 +53,30 @@ class App extends Component {
     ContactsAPI.remove(contact);
   }
 
-  render() {
+  renderContactList() {
     const { contacts, } = this.state;
 
     return (
+      <ContactList
+        contacts={contacts}
+        onDeleteContact={this.removeContact}
+      />
+    );
+  }
+
+  renderCreateContact({ history, }) {
+    return (
+      <CreateContact
+        onCreateContact={(contact) => this.createContact(contact, history)}
+      />
+    );
+  }
+
+  render() {
+    return (
       <div>
-        <ContactList
-          contacts={contacts}
-          onDeleteContact={this.removeContact}
-        />
+        <Route exact path="/" render={this.renderContactList} />
+        <Route path="/create" render={this.renderCreateContact} />
       </div>
     );
   }
